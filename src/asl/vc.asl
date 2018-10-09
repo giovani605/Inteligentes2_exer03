@@ -22,7 +22,7 @@ Actions:
    O tamanho do ambiente foi aumentado para 4x4
 */
 
- 
+/* 
 !clean. // initial goal
  // vou fazer uma gente novo
 
@@ -30,7 +30,32 @@ Actions:
 +!clean : clean <- .my_name(N);.print(" Contexto CLEAN ");!move;!clean.
 +!clean : dirty <- suck;.my_name(N);.print(" Contexto Dirty "); !move; !clean.
 -!clean   <- .wait(2000);.print(" Contexto remove ");!clean.
+*/
 
+
+// 1 camada - mais importante
+
+!bateria.
+
++!bateria: not fraca <- !clean;!bateria.
+-!bateria <- !recarrega.
+
++!recarrega <- .print("Recarregando Bateria");recarregar;.wait(10000);!bateria.
+
+
+// 2 camada 
++!clean : clean <- .my_name(N);.print(" Contexto CLEAN posso me mover ");!move.
++!clean : dirty <- suck;.my_name(N);.print(" Contexto Dirty  LIMPAR"). 
+
+
+// 3 camada 
++!move : true <- .wait(2000);
+   .nth(math.random(4), [left, right, up, down], Ac);
+   .my_name(N);
+   .print(N, " doing ", Ac);
+   Ac.
+   
+   
 /* 
 !limpar.
 !limpo.
@@ -48,9 +73,5 @@ Actions:
 
 //+!slow : true <- .wait(2000); !clean.
 
-+!move : true <- .wait(2000);
-   .nth(math.random(4), [left, right, up, down], Ac);
-   .my_name(N);
-   .print(N, " doing ", Ac);
-   Ac.
+
 

@@ -22,7 +22,9 @@ public class VCWorld extends Environment {
 	private double idPos[][] = new double[MAX_X][MAX_X];
 	private int vcx[] = { 4, 1, 2 }; // the vacuum cleaner location
 	private int vcy[] = { 0, 1, 2 };
-
+	private int bateria[] = { 100, 50, 25 };
+	
+	
 	private Object modelLock = new Object();
 
 	/** general delegations */
@@ -33,6 +35,7 @@ public class VCWorld extends Environment {
 	/** constant terms used for perception */
 	private static final Literal lDirty = ASSyntax.createLiteral("dirty");
 	private static final Literal lClean = ASSyntax.createLiteral("clean");
+	private static final Literal lFraca = ASSyntax.createLiteral("fraca");
 
 	public VCWorld() {
 		for (int j = 0, idp = 1; j < MAX_Y; j++) {
@@ -50,10 +53,10 @@ public class VCWorld extends Environment {
 				try {
 					while (isRunning()) {
 						// add random dirty
-						
-//						if (r.nextInt(100) < 2) {
-//							dirty[r.nextInt(MAX_X)][r.nextInt(MAX_Y)] = true;
-//						}
+
+						// if (r.nextInt(100) < 2) {
+						// dirty[r.nextInt(MAX_X)][r.nextInt(MAX_Y)] = true;
+						// }
 						gui.paint();
 						createPercept();
 						Thread.sleep(1000);
@@ -67,7 +70,7 @@ public class VCWorld extends Environment {
 	/** create the agents perceptions based on the world model */
 	private void createPercept() {
 		// remove previous perception
-		//clearPercepts();
+		// clearPercepts();
 		this.clearAllPercepts();
 
 		for (int ag = 0; ag < NB_AGENTS; ag++) {
@@ -75,14 +78,14 @@ public class VCWorld extends Environment {
 			Literal lPos = ASSyntax.createLiteral("pos", ASSyntax.createNumber(idPos[vcy[ag]][vcx[ag]]));
 			String idAg = "vc" + ag;
 			addPercept(idAg, lPos);
-			
 
 			if (dirty[vcx[ag]][vcy[ag]]) {
 				addPercept(idAg, lDirty);
-				System.out.println(idAg + " Dirty");
 			} else {
 				addPercept(idAg, lClean);
-				System.out.println(idAg + " Clean");
+			}
+			if (bateria[ag] < 10) {
+				addPercept(idAg, lFraca);
 			}
 		}
 	}
@@ -92,13 +95,16 @@ public class VCWorld extends Environment {
 
 		logger.info(ag + " doing " + action);
 
-
 		synchronized (modelLock) {
 			// get the agent identifier
 			String idStr[] = ag.split("vc");
-			//System.out.println(idStr[1]);
-			int id = Integer.parseInt(idStr[1]);
-
+			
+			int id = (Integer.parseInt(idStr[1]));
+			if(id == 3) {
+				id = 0;
+			}
+			System.out.println("alo  galera de " + id);
+			bateria[id]--;
 			// Change the world model based on action
 			if (action.getFunctor().equals("esperar")) {
 				try {
@@ -106,8 +112,10 @@ public class VCWorld extends Environment {
 					System.out.println("Calma Agente " + ag);
 				} catch (Exception e) {
 				} // slow down the execution
-			}
-			else if (action.getFunctor().equals("suck")) {
+			} else if (action.getFunctor().equals("recarregar")) {
+					System.out.println("Recarregando bateria");
+					bateria[id] = 50;
+			} else if (action.getFunctor().equals("suck")) {
 				if (dirty[vcx[id]][vcy[id]]) {
 					dirty[vcx[id]][vcy[id]] = false;
 					System.out.println("suck a dirty");
@@ -143,6 +151,7 @@ public class VCWorld extends Environment {
 		createPercept(); // update agents perception for the new world state
 		gui.paint();
 		return true;
+
 	}
 
 	@Override
