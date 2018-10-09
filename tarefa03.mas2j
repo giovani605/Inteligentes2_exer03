@@ -2,7 +2,7 @@ MAS tarefa03 {
 
 	infrastructure: Centralised
 	environment: VCWorld
-    agents: vc #1;	
+    agents: vc #3;	
 
 	aslSourcePath:
 		"src/asl";

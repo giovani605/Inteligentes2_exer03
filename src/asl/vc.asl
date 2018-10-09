@@ -22,14 +22,33 @@ Actions:
    O tamanho do ambiente foi aumentado para 4x4
 */
 
-   
+ 
 !clean. // initial goal
+ // vou fazer uma gente novo
 
-+!clean : clean <- !move; !clean.
-+!clean : dirty <- suck; !move; !clean.
--!clean         <- !clean.
 
-+!move : true <- 
++!clean : clean <- .my_name(N);.print(" Contexto CLEAN ");!move;!clean.
++!clean : dirty <- suck;.my_name(N);.print(" Contexto Dirty "); !move; !clean.
+-!clean   <- .wait(2000);.print(" Contexto remove ");!clean.
+
+/* 
+!limpar.
+!limpo.
+
+
++!limpo : clean <- .print(" Limpo ");.wait(2000);!move;!limpo.
+*/
+
+/* 
++dirty: true <- .print(" Percebecao Dirty ");!limpar.
++clean: true <- .print(" Percebecao Limpo ");!move.
+
++!limpar: true <- suck;.print(" Limpando ");.wait(2000).
+*/
+
+//+!slow : true <- .wait(2000); !clean.
+
++!move : true <- .wait(2000);
    .nth(math.random(4), [left, right, up, down], Ac);
    .my_name(N);
    .print(N, " doing ", Ac);
